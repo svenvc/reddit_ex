@@ -13,8 +13,9 @@ defmodule Reddit.Links.Vote do
   @doc false
   def changeset(vote, attrs, user_scope) do
     vote
-    |> cast(attrs, [:direction])
+    |> cast(attrs, [:direction, :link_id])
     |> validate_required([:direction])
+    |> foreign_key_constraint(:link_id)
     |> put_change(:user_id, user_scope.user.id)
   end
 end
