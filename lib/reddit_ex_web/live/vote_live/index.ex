@@ -21,7 +21,7 @@ defmodule RedditWeb.VoteLive.Index do
         rows={@streams.votes}
         row_click={fn {_id, vote} -> JS.navigate(~p"/votes/#{vote}") end}
       >
-        <:col :let={{_id, vote}} label="Link">{vote.link_id}</:col>
+        <:col :let={{_id, vote}} label="Link ID">{vote.link_id}</:col>
         <:col :let={{_id, vote}} label="Direction">{vote.direction}</:col>
         <:action :let={{_id, vote}}>
           <div class="sr-only">
