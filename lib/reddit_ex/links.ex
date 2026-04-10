@@ -283,4 +283,39 @@ defmodule Reddit.Links do
 
     Vote.changeset(vote, attrs, scope)
   end
+
+  def vote_link_up(%Scope{} = scope, %Link{} = link) do
+    existing_vote = Repo.get_by(Vote, link_id: link.id, user_id: scope.user.id)
+
+    if existing_vote do
+      if existing_vote.direction == :down do
+        update_vote(scope, existing_vote, %{direction: :up})
+        update_link(scope, link, %{points: link.points + 2})
+        :ok
+      else
+        :already_voted_up
+      end
+    else
+      create_vote(scope, %{link_id: link.id, user_id: scope.user.id, direction: :up})
+      update_link(scope, link, %{points: link.points + 1})
+      :ok
+    end
+  end
+
+  def vote_link_down(%Scope{} = scope, %Link{} = link) do
+    existing_vote = Repo.get_by(Vote, link_id: link.id, user_id: scope.user.id)
+
+    if existing_vote do
+      if existing_vote.direction == :up do
+        update_vote(scope, existing_vote, %{direction: :down})
+        update_link(scope, link, %{points: link.points - 2})
+        :ok
+      else
+        :already_voted_down
+      end
+    else
+      create_vote(scope, %{link_id: link.id, user_id: scope.user.id, direction: :down})
+      update_link(scope, link, %{points: link.points - 1})
+    end
+  end
 end
