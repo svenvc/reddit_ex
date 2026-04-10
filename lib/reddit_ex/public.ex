@@ -5,7 +5,8 @@ defmodule Reddit.Public do
     from(link in Reddit.Links.Link,
       select: link,
       order_by: [desc: link.points],
-      limit: ^limit)
+      limit: ^limit
+    )
     |> Reddit.Repo.all()
   end
 

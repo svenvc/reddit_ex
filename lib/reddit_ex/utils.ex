@@ -1,7 +1,12 @@
 defmodule Reddit.Utils do
   def validate_url_and_extract_html_title(url) when is_binary(url) do
     case Req.get(url) do
-      {:ok, %Req.Response{status: 200, headers: %{"content-type" => ["text/html" <> _more]}, body: body}} ->
+      {:ok,
+       %Req.Response{
+         status: 200,
+         headers: %{"content-type" => ["text/html" <> _more]},
+         body: body
+       }} ->
         body
         |> Floki.parse_document!()
         |> Floki.find("title")
