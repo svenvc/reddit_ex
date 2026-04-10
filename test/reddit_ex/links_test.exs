@@ -92,4 +92,90 @@ defmodule Reddit.LinksTest do
       assert %Ecto.Changeset{} = Links.change_link(scope, link)
     end
   end
+
+  describe "votes" do
+    alias Reddit.Links.Vote
+
+    import Reddit.AccountsFixtures, only: [user_scope_fixture: 0]
+    import Reddit.LinksFixtures
+
+    @invalid_attrs %{direction: nil}
+
+    test "list_votes/1 returns all scoped votes" do
+      scope = user_scope_fixture()
+      other_scope = user_scope_fixture()
+      vote = vote_fixture(scope)
+      other_vote = vote_fixture(other_scope)
+      assert Links.list_votes(scope) == [vote]
+      assert Links.list_votes(other_scope) == [other_vote]
+    end
+
+    test "get_vote!/2 returns the vote with given id" do
+      scope = user_scope_fixture()
+      vote = vote_fixture(scope)
+      other_scope = user_scope_fixture()
+      assert Links.get_vote!(scope, vote.id) == vote
+      assert_raise Ecto.NoResultsError, fn -> Links.get_vote!(other_scope, vote.id) end
+    end
+
+    test "create_vote/2 with valid data creates a vote" do
+      valid_attrs = %{direction: :up}
+      scope = user_scope_fixture()
+
+      assert {:ok, %Vote{} = vote} = Links.create_vote(scope, valid_attrs)
+      assert vote.direction == :up
+      assert vote.user_id == scope.user.id
+    end
+
+    test "create_vote/2 with invalid data returns error changeset" do
+      scope = user_scope_fixture()
+      assert {:error, %Ecto.Changeset{}} = Links.create_vote(scope, @invalid_attrs)
+    end
+
+    test "update_vote/3 with valid data updates the vote" do
+      scope = user_scope_fixture()
+      vote = vote_fixture(scope)
+      update_attrs = %{direction: :down}
+
+      assert {:ok, %Vote{} = vote} = Links.update_vote(scope, vote, update_attrs)
+      assert vote.direction == :down
+    end
+
+    test "update_vote/3 with invalid scope raises" do
+      scope = user_scope_fixture()
+      other_scope = user_scope_fixture()
+      vote = vote_fixture(scope)
+
+      assert_raise MatchError, fn ->
+        Links.update_vote(other_scope, vote, %{})
+      end
+    end
+
+    test "update_vote/3 with invalid data returns error changeset" do
+      scope = user_scope_fixture()
+      vote = vote_fixture(scope)
+      assert {:error, %Ecto.Changeset{}} = Links.update_vote(scope, vote, @invalid_attrs)
+      assert vote == Links.get_vote!(scope, vote.id)
+    end
+
+    test "delete_vote/2 deletes the vote" do
+      scope = user_scope_fixture()
+      vote = vote_fixture(scope)
+      assert {:ok, %Vote{}} = Links.delete_vote(scope, vote)
+      assert_raise Ecto.NoResultsError, fn -> Links.get_vote!(scope, vote.id) end
+    end
+
+    test "delete_vote/2 with invalid scope raises" do
+      scope = user_scope_fixture()
+      other_scope = user_scope_fixture()
+      vote = vote_fixture(scope)
+      assert_raise MatchError, fn -> Links.delete_vote(other_scope, vote) end
+    end
+
+    test "change_vote/2 returns a vote changeset" do
+      scope = user_scope_fixture()
+      vote = vote_fixture(scope)
+      assert %Ecto.Changeset{} = Links.change_vote(scope, vote)
+    end
+  end
 end

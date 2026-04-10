@@ -18,4 +18,17 @@ defmodule Reddit.LinksFixtures do
     {:ok, link} = Reddit.Links.create_link(scope, attrs)
     link
   end
+
+  @doc """
+  Generate a vote.
+  """
+  def vote_fixture(scope, attrs \\ %{}) do
+    attrs =
+      Enum.into(attrs, %{
+        direction: :up
+      })
+
+    {:ok, vote} = Reddit.Links.create_vote(scope, attrs)
+    vote
+  end
 end

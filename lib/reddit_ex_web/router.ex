@@ -68,6 +68,10 @@ defmodule RedditWeb.Router do
       live "/links/new", LinkLive.Form, :new
       live "/links/:id", LinkLive.Show, :show
       live "/links/:id/edit", LinkLive.Form, :edit
+      live "/votes", VoteLive.Index, :index
+      live "/votes/new", VoteLive.Form, :new
+      live "/votes/:id", VoteLive.Show, :show
+      live "/votes/:id/edit", VoteLive.Form, :edit
       live "/users/register", UserLive.Registration, :new
       live "/users/log-in", UserLive.Login, :new
       live "/users/log-in/:token", UserLive.Confirmation, :new
