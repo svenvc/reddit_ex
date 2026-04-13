@@ -52,6 +52,8 @@ defmodule RedditWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{RedditWeb.UserAuth, :require_authenticated}] do
+      live "/reddit/links/new", RedditLive.Form, :new
+      live "/reddit/links/:id/edit", RedditLive.Form, :edit
       live "/links", LinkLive.Index, :index
       live "/links/new", LinkLive.Form, :new
       live "/links/:id", LinkLive.Show, :show

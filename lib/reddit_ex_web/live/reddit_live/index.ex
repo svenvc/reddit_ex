@@ -9,13 +9,15 @@ defmodule RedditWeb.RedditLive.Index do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <.header>
-        <a href={~p"/reddit"}>Reddit_ex</a>
+        <a href={~p"/reddit"} class="text-4xl">Reddit_ex</a>
         <:actions :if={@current_scope}>
-          <.button variant="primary" navigate={~p"/links/new"}>
+          <.button variant="primary" navigate={~p"/reddit/links/new"}>
             <.icon name="hero-plus" /> New Link
           </.button>
         </:actions>
       </.header>
+
+      <p class="font-thin italic">Aggregates links, submitted and voted by users</p>
 
       <.table
         id="links"
@@ -24,7 +26,7 @@ defmodule RedditWeb.RedditLive.Index do
         <:col :let={{_id, link}} label="URL"><a href={link.url}>{link.url}</a></:col>
         <:col :let={{_id, link}} label="Title">{link.title}</:col>
         <:col :let={{_id, link}} label="Date">{Date.to_iso8601(link.updated_at)}</:col>
-        <:col :let={{_id, link}} label="Points">{link.points}</:col>
+        <:col :let={{_id, link}} label="Votes">{link.points}</:col>
         <:action :let={{_id, link}} :if={@current_scope}>
           <.link phx-click="vote-up" phx-value-link-id={link.id}>Up</.link>
         </:action>
@@ -32,7 +34,10 @@ defmodule RedditWeb.RedditLive.Index do
           <.link phx-click="vote-down" phx-value-link-id={link.id}>Down</.link>
         </:action>
         <:action :let={{_id, link}} :if={@current_scope}>
-          <.link :if={link.user_id == @current_scope.user.id} navigate={~p"/links/#{link}/edit"}>
+          <.link
+            :if={link.user_id == @current_scope.user.id}
+            navigate={~p"/reddit/links/#{link}/edit"}
+          >
             Edit
           </.link>
         </:action>
@@ -104,6 +109,6 @@ defmodule RedditWeb.RedditLive.Index do
   end
 
   defp list_links() do
-    Public.list_links_highest_points(5)
+    Public.list_links_highest_points(8)
   end
 end
