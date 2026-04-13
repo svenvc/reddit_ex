@@ -32,15 +32,7 @@ defmodule RedditWeb.RedditLive.Index do
           <.link>Down</.link>
         </:action>
         <:action :let={{_id, link}} :if={@current_scope}>
-          <.link navigate={~p"/links/#{link}/edit"}>Edit</.link>
-        </:action>
-        <:action :let={{id, link}} :if={@current_scope}>
-          <.link
-            phx-click={JS.push("delete", value: %{id: link.id}) |> hide("##{id}")}
-            data-confirm="Are you sure?"
-          >
-            Delete
-          </.link>
+          <.link :if={link.user_id == @current_scope.user.id} navigate={~p"/links/#{link}/edit"}>Edit</.link>
         </:action>
       </.table>
     </Layouts.app>
@@ -54,10 +46,10 @@ defmodule RedditWeb.RedditLive.Index do
       Links.subscribe_links(socket.assigns.current_scope)
     end
 
-    {:ok,
-     socket
-     |> assign(:page_title, "Reddit_ex")
-     |> stream(:links, list_links())}
+    socket
+    |> assign(:page_title, "Reddit_ex")
+    |> stream(:links, list_links())
+    |> then(&{:ok, &1})
   end
 
   @impl true
@@ -65,13 +57,17 @@ defmodule RedditWeb.RedditLive.Index do
     link = Links.get_link!(socket.assigns.current_scope, id)
     {:ok, _} = Links.delete_link(socket.assigns.current_scope, link)
 
-    {:noreply, stream_delete(socket, :links, link)}
+    socket
+    |> stream_delete(:links, link)
+    |> then(&{:noreply, &1})
   end
 
   @impl true
   def handle_info({type, %Reddit.Links.Link{}}, socket)
       when type in [:created, :updated, :deleted] do
-    {:noreply, stream(socket, :links, list_links(), reset: true)}
+    socket
+    |> stream(:links, list_links(), reset: true)
+    |> then(&{:noreply, &1})
   end
 
   defp list_links() do
