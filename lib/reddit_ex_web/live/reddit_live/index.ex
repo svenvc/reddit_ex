@@ -19,6 +19,27 @@ defmodule RedditWeb.RedditLive.Index do
 
       <p class="font-thin italic">Aggregates links, submitted and voted by users</p>
 
+      <div class="join">
+        <input
+          class="join-item btn"
+          type="radio"
+          name="options"
+          aria-label="Most voted"
+          checked={@list_sorting == "most-voted"}
+          phx-click="toggle-list-sorting"
+          phx-value-sorting="most-voted"
+        />
+        <input
+          class="join-item btn"
+          type="radio"
+          name="options"
+          aria-label="Most recent"
+          checked={@list_sorting == "most-recent"}
+          phx-click="toggle-list-sorting"
+          phx-value-sorting="most-recent"
+        />
+      </div>
+
       <.table
         id="links"
         rows={@streams.links}
@@ -54,7 +75,8 @@ defmodule RedditWeb.RedditLive.Index do
 
     socket
     |> assign(:page_title, "Reddit_ex")
-    |> stream(:links, list_links())
+    |> assign(:list_sorting, "most-voted")
+    |> stream(:links, list_links("most-voted"))
     |> then(&{:ok, &1})
   end
 
@@ -79,6 +101,8 @@ defmodule RedditWeb.RedditLive.Index do
         :unknown_link
       end
 
+    Process.send_after(self(), :clear_flash, 2500)
+
     socket
     |> put_flash(:info, flash)
     |> then(&{:noreply, &1})
@@ -95,8 +119,19 @@ defmodule RedditWeb.RedditLive.Index do
         :unknown_link
       end
 
+    Process.send_after(self(), :clear_flash, 2500)
+
     socket
     |> put_flash(:info, flash)
+    |> then(&{:noreply, &1})
+  end
+
+  @impl true
+  def handle_event("toggle-list-sorting", %{"sorting" => sorting}, socket)
+      when sorting in ~w(most-voted most-recent) do
+    socket
+    |> assign(:list_sorting, sorting)
+    |> stream(:links, list_links(sorting), reset: true)
     |> then(&{:noreply, &1})
   end
 
@@ -104,11 +139,21 @@ defmodule RedditWeb.RedditLive.Index do
   def handle_info({type, %Reddit.Links.Link{}}, socket)
       when type in [:created, :updated, :deleted] do
     socket
-    |> stream(:links, list_links(), reset: true)
+    |> stream(:links, list_links(socket.assigns.list_sorting), reset: true)
     |> then(&{:noreply, &1})
   end
 
-  defp list_links() do
-    Public.list_links_highest_points(8)
+  @impl true
+  def handle_info(:clear_flash, socket) do
+    socket
+    |> clear_flash()
+    |> then(&{:noreply, &1})
+  end
+
+  defp list_links(sorting) when sorting in ~w(most-voted most-recent) do
+    case sorting do
+      "most-voted" -> Public.list_links_highest_points(8)
+      "most-recent" -> Public.list_links_most_recent(8)
+    end
   end
 end
