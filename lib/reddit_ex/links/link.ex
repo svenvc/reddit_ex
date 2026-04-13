@@ -18,4 +18,11 @@ defmodule Reddit.Links.Link do
     |> validate_required([:url, :title, :points])
     |> put_change(:user_id, user_scope.user.id)
   end
+
+  @doc false
+  def changeset(link, attrs) do
+    link
+    |> cast(attrs, [:url, :title, :points])
+    |> validate_required([:url, :title, :points])
+  end
 end

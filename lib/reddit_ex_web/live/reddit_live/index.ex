@@ -25,14 +25,16 @@ defmodule RedditWeb.RedditLive.Index do
         <:col :let={{_id, link}} label="Title">{link.title}</:col>
         <:col :let={{_id, link}} label="Date">{Date.to_iso8601(link.updated_at)}</:col>
         <:col :let={{_id, link}} label="Points">{link.points}</:col>
-        <:action :if={@current_scope}>
-          <.link>Up</.link>
-        </:action>
-        <:action :if={@current_scope}>
-          <.link>Down</.link>
+        <:action :let={{_id, link}} :if={@current_scope}>
+          <.link phx-click="vote-up" phx-value-link-id={link.id}>Up</.link>
         </:action>
         <:action :let={{_id, link}} :if={@current_scope}>
-          <.link :if={link.user_id == @current_scope.user.id} navigate={~p"/links/#{link}/edit"}>Edit</.link>
+          <.link phx-click="vote-down" phx-value-link-id={link.id}>Down</.link>
+        </:action>
+        <:action :let={{_id, link}} :if={@current_scope}>
+          <.link :if={link.user_id == @current_scope.user.id} navigate={~p"/links/#{link}/edit"}>
+            Edit
+          </.link>
         </:action>
       </.table>
     </Layouts.app>
@@ -41,9 +43,8 @@ defmodule RedditWeb.RedditLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    if connected?(socket) && socket.assigns.current_scope do
-      # fix: even public needs global scoped updates
-      Links.subscribe_links(socket.assigns.current_scope)
+    if connected?(socket) do
+      Links.subscribe_links()
     end
 
     socket
@@ -59,6 +60,38 @@ defmodule RedditWeb.RedditLive.Index do
 
     socket
     |> stream_delete(:links, link)
+    |> then(&{:noreply, &1})
+  end
+
+  @impl true
+  def handle_event("vote-up", %{"link-id" => link_id}, socket) do
+    link = Public.resolve_link(link_id)
+
+    flash =
+      if link do
+        Reddit.Links.vote_link_up(socket.assigns.current_scope, link)
+      else
+        :unknown_link
+      end
+
+    socket
+    |> put_flash(:info, flash)
+    |> then(&{:noreply, &1})
+  end
+
+  @impl true
+  def handle_event("vote-down", %{"link-id" => link_id}, socket) do
+    link = Public.resolve_link(link_id)
+
+    flash =
+      if link do
+        Reddit.Links.vote_link_down(socket.assigns.current_scope, link)
+      else
+        :unknown_link
+      end
+
+    socket
+    |> put_flash(:info, flash)
     |> then(&{:noreply, &1})
   end
 

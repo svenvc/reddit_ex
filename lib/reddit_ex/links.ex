@@ -10,7 +10,7 @@ defmodule Reddit.Links do
   alias Reddit.Accounts.Scope
 
   @doc """
-  Subscribes to scoped notifications about any link changes.
+  Subscribes to scoped notifications about any link changes from any user.
 
   The broadcasted messages match the pattern:
 
@@ -19,16 +19,12 @@ defmodule Reddit.Links do
     * {:deleted, %Link{}}
 
   """
-  def subscribe_links(%Scope{} = scope) do
-    key = scope.user.id
-
-    Phoenix.PubSub.subscribe(Reddit.PubSub, "user:#{key}:links")
+  def subscribe_links() do
+    Phoenix.PubSub.subscribe(Reddit.PubSub, "global:links")
   end
 
-  defp broadcast_link(%Scope{} = scope, message) do
-    key = scope.user.id
-
-    Phoenix.PubSub.broadcast(Reddit.PubSub, "user:#{key}:links", message)
+  defp broadcast_link(message) do
+    Phoenix.PubSub.broadcast(Reddit.PubSub, "global:links", message)
   end
 
   @doc """
@@ -79,7 +75,7 @@ defmodule Reddit.Links do
            %Link{}
            |> Link.changeset(attrs, scope)
            |> Repo.insert() do
-      broadcast_link(scope, {:created, link})
+      broadcast_link({:created, link})
       {:ok, link}
     end
   end
@@ -103,7 +99,17 @@ defmodule Reddit.Links do
            link
            |> Link.changeset(attrs, scope)
            |> Repo.update() do
-      broadcast_link(scope, {:updated, link})
+      broadcast_link({:updated, link})
+      {:ok, link}
+    end
+  end
+
+  def update_link(:any_scope, %Link{} = link, attrs) do
+    with {:ok, link = %Link{}} <-
+           link
+           |> Link.changeset(attrs)
+           |> Repo.update() do
+      broadcast_link({:updated, link})
       {:ok, link}
     end
   end
@@ -125,7 +131,7 @@ defmodule Reddit.Links do
 
     with {:ok, link = %Link{}} <-
            Repo.delete(link) do
-      broadcast_link(scope, {:deleted, link})
+      broadcast_link({:deleted, link})
       {:ok, link}
     end
   end
@@ -290,15 +296,15 @@ defmodule Reddit.Links do
     if existing_vote do
       if existing_vote.direction == :down do
         update_vote(scope, existing_vote, %{direction: :up})
-        update_link(scope, link, %{points: link.points + 2})
-        :ok
+        update_link(:any_scope, link, %{points: link.points + 2})
+        :voted_up
       else
         :already_voted_up
       end
     else
       create_vote(scope, %{link_id: link.id, user_id: scope.user.id, direction: :up})
-      update_link(scope, link, %{points: link.points + 1})
-      :ok
+      update_link(:any_scope, link, %{points: link.points + 1})
+      :voted_up
     end
   end
 
@@ -308,14 +314,15 @@ defmodule Reddit.Links do
     if existing_vote do
       if existing_vote.direction == :up do
         update_vote(scope, existing_vote, %{direction: :down})
-        update_link(scope, link, %{points: link.points - 2})
-        :ok
+        update_link(:any_scope, link, %{points: link.points - 2})
+        :voted_down
       else
         :already_voted_down
       end
     else
       create_vote(scope, %{link_id: link.id, user_id: scope.user.id, direction: :down})
-      update_link(scope, link, %{points: link.points - 1})
+      update_link(:any_scope, link, %{points: link.points - 1})
+      :voted_down
     end
   end
 end

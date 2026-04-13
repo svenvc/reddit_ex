@@ -32,7 +32,7 @@ defmodule RedditWeb.LinkLive.Show do
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     if connected?(socket) do
-      Links.subscribe_links(socket.assigns.current_scope)
+      Links.subscribe_links()
     end
 
     {:ok,
