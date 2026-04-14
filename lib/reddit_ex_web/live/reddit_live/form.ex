@@ -78,18 +78,9 @@ defmodule RedditWeb.RedditLive.Form do
     socket |> then(&{:noreply, &1})
   end
 
-  @impl true
-  def handle_info(:clear_flash, socket) do
-    socket
-    |> clear_flash()
-    |> then(&{:noreply, &1})
-  end
-
   defp save_link(socket, :edit, link_params) do
     case Links.update_link(socket.assigns.current_scope, socket.assigns.link, link_params) do
       {:ok, link} ->
-        Process.send_after(self(), :clear_flash, 2500)
-
         {:noreply,
          socket
          |> put_flash(:info, "Link updated successfully")
@@ -105,8 +96,6 @@ defmodule RedditWeb.RedditLive.Form do
   defp save_link(socket, :new, link_params) do
     case Links.create_link(socket.assigns.current_scope, link_params) do
       {:ok, link} ->
-        Process.send_after(self(), :clear_flash, 2500)
-
         {:noreply,
          socket
          |> put_flash(:info, "Link created successfully")

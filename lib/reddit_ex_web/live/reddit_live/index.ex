@@ -73,6 +73,11 @@ defmodule RedditWeb.RedditLive.Index do
       Links.subscribe_links()
     end
 
+    if Phoenix.Flash.get(socket.assigns.flash, :info) ||
+         Phoenix.Flash.get(socket.assigns.flash, :error) do
+      Process.send_after(self(), :clear_flash, 2500)
+    end
+
     socket
     |> assign(:page_title, "Reddit_ex")
     |> assign(:list_sorting, "most-voted")
