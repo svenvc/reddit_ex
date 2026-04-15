@@ -4,6 +4,8 @@ defmodule RedditWeb.RedditLive.Index do
   alias Reddit.Links
   alias Reddit.Public
 
+  @number_of_links_to_show 10
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -17,7 +19,7 @@ defmodule RedditWeb.RedditLive.Index do
         </:actions>
       </.header>
 
-      <p class="font-thin italic">Aggregates links, submitted and voted by users</p>
+      <p class="font-thin italic mb-6">Aggregated links, submitted and voted by users</p>
 
       <div class="join">
         <input
@@ -157,8 +159,8 @@ defmodule RedditWeb.RedditLive.Index do
 
   defp list_links(sorting) when sorting in ~w(most-voted most-recent) do
     case sorting do
-      "most-voted" -> Public.list_links_highest_points(8)
-      "most-recent" -> Public.list_links_most_recent(8)
+      "most-voted" -> Public.list_links_highest_points(@number_of_links_to_show)
+      "most-recent" -> Public.list_links_most_recent(@number_of_links_to_show)
     end
   end
 end
