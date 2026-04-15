@@ -3,6 +3,6 @@ defmodule RedditWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "Aggregates links, submitted and voted by users"
+    assert html_response(conn, 200) =~ "Aggregated links, submitted and voted by users"
   end
 end
