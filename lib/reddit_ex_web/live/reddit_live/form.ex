@@ -48,6 +48,7 @@ defmodule RedditWeb.RedditLive.Form do
           >
             Delete Link
           </.button>
+          <.button href={@form[:url].value}>Visit link</.button>
           <.button navigate={return_path(@current_scope, @return_to, @link)}>Cancel</.button>
         </footer>
       </.form>
