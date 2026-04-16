@@ -295,16 +295,26 @@ defmodule Reddit.Links do
 
     if existing_vote do
       if existing_vote.direction == :down do
-        update_vote(scope, existing_vote, %{direction: :up})
-        update_link(:any_scope, link, %{points: link.points + 2})
-        :voted_up
+        {:ok, result} =
+          Repo.transact(fn ->
+            {:ok, _vote} = update_vote(scope, existing_vote, %{direction: :up})
+            inc_link_points(link, 2)
+            {:ok, :voted_up}
+          end)
+
+        result
       else
         :already_voted_up
       end
     else
-      create_vote(scope, %{link_id: link.id, user_id: scope.user.id, direction: :up})
-      update_link(:any_scope, link, %{points: link.points + 1})
-      :voted_up
+      {:ok, result} =
+        Repo.transact(fn ->
+          {:ok, _vote} = create_vote(scope, %{link_id: link.id, direction: :up})
+          inc_link_points(link, 1)
+          {:ok, :voted_up}
+        end)
+
+      result
     end
   end
 
@@ -313,16 +323,35 @@ defmodule Reddit.Links do
 
     if existing_vote do
       if existing_vote.direction == :up do
-        update_vote(scope, existing_vote, %{direction: :down})
-        update_link(:any_scope, link, %{points: link.points - 2})
-        :voted_down
+        {:ok, result} =
+          Repo.transact(fn ->
+            {:ok, _vote} = update_vote(scope, existing_vote, %{direction: :down})
+            inc_link_points(link, -2)
+            {:ok, :voted_down}
+          end)
+
+        result
       else
         :already_voted_down
       end
     else
-      create_vote(scope, %{link_id: link.id, user_id: scope.user.id, direction: :down})
-      update_link(:any_scope, link, %{points: link.points - 1})
-      :voted_down
+      {:ok, result} =
+        Repo.transact(fn ->
+          {:ok, _vote} = create_vote(scope, %{link_id: link.id, direction: :down})
+          inc_link_points(link, -1)
+          {:ok, :voted_down}
+        end)
+
+      result
     end
+  end
+
+  def inc_link_points(%Link{} = link, delta) do
+    {1, _} =
+      Reddit.Links.Link
+      |> Ecto.Query.where(id: ^link.id)
+      |> Reddit.Repo.update_all(inc: [points: delta])
+
+    broadcast_link({:updated, link})
   end
 end
