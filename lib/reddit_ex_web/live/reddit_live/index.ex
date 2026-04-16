@@ -4,7 +4,7 @@ defmodule RedditWeb.RedditLive.Index do
   alias Reddit.Links
   alias Reddit.Public
 
-  @number_of_links_to_show 10
+  @number_of_links_to_show 32
 
   @impl true
   def render(assigns) do
@@ -51,17 +51,22 @@ defmodule RedditWeb.RedditLive.Index do
         <:col :let={{_id, link}} label="Date">{Date.to_iso8601(link.updated_at)}</:col>
         <:col :let={{_id, link}} label="Votes">{link.points}</:col>
         <:action :let={{_id, link}} :if={@current_scope}>
-          <.link phx-click="vote-up" phx-value-link-id={link.id}>Up</.link>
+          <.link phx-click="vote-up" phx-value-link-id={link.id} title="Vote link up">
+            <span class="hero-arrow-up-circle h-6 w-6" />
+          </.link>
         </:action>
         <:action :let={{_id, link}} :if={@current_scope}>
-          <.link phx-click="vote-down" phx-value-link-id={link.id}>Down</.link>
+          <.link phx-click="vote-down" phx-value-link-id={link.id} title="Vote link down">
+            <span class="hero-arrow-down-circle h-6 w-6" />
+          </.link>
         </:action>
         <:action :let={{_id, link}} :if={@current_scope}>
           <.link
             :if={link.user_id == @current_scope.user.id}
             navigate={~p"/reddit/links/#{link}/edit"}
+            title="Edit link"
           >
-            Edit
+            <span class="hero-ellipsis-horizontal-circle h-6 w-6" />
           </.link>
         </:action>
       </.table>
