@@ -20,6 +20,7 @@ defmodule RedditWeb.RedditLive.Form do
           type="text"
           label="Url"
           phx-debounce="blur"
+          placeholder="https://hostname.tld"
         />
         <.input
           field={@form[:title]}
