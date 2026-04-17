@@ -43,7 +43,9 @@ config :reddit_ex, RedditWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :reddit_ex, Reddit.Mailer, adapter: Swoosh.Adapters.Local
+#
+# Always use gmail
+config :reddit_ex, Reddit.Mailer, adapter: Swoosh.Adapters.Gmail
 
 # Configure esbuild (the version is required)
 config :esbuild,

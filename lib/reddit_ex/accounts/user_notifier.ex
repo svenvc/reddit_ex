@@ -1,7 +1,6 @@
 defmodule Reddit.Accounts.UserNotifier do
   import Swoosh.Email
 
-  alias Reddit.Mailer
   alias Reddit.Accounts.User
 
   # Delivers the email using the application mailer.
@@ -9,11 +8,11 @@ defmodule Reddit.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"Reddit", "contact@example.com"})
+      |> from({"Reddit_ex", "sven@stfx.eu"})
       |> subject(subject)
       |> text_body(body)
 
-    with {:ok, _metadata} <- Mailer.deliver(email) do
+    with {:ok, _metadata} <- Reddit.Utils.deliver_gmail(email) do
       {:ok, email}
     end
   end

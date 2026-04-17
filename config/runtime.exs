@@ -117,3 +117,9 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 end
+
+if Config.config_env() == :dev do
+  if File.exists?(".env") do
+    DotenvParser.load_file(".env")
+  end
+end
