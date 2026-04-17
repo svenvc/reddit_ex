@@ -65,6 +65,10 @@ defmodule RedditWeb.UserLive.Settings do
           Save Password
         </.button>
       </.form>
+
+      <div class="divider" />
+
+      <.button variant="primary" navigate={~p"/reddit"}>Cancel</.button>
     </Layouts.app>
     """
   end
