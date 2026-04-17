@@ -90,6 +90,10 @@ defmodule RedditWeb.UserLive.Login do
             Log in only this time
           </.button>
         </.form>
+
+        <div class="divider" />
+
+        <.button variant="primary" navigate={~p"/"}>Cancel</.button>
       </div>
     </Layouts.app>
     """

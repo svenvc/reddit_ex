@@ -37,6 +37,10 @@ defmodule RedditWeb.UserLive.Registration do
             Create an account
           </.button>
         </.form>
+
+        <div class="divider" />
+
+        <.button variant="primary" navigate={~p"/"}>Cancel</.button>
       </div>
     </Layouts.app>
     """
