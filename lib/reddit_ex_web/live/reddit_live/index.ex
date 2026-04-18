@@ -46,7 +46,9 @@ defmodule RedditWeb.RedditLive.Index do
         id="links"
         rows={@streams.links}
       >
-        <:col :let={{_id, link}} label="URL"><a href={link.url}>{link.url}</a></:col>
+        <:col :let={{_id, link}} label="URL">
+          <a href={link.url} title={"Open #{link.url}"}>{link.url}</a>
+        </:col>
         <:col :let={{_id, link}} label="Title">{link.title}</:col>
         <:col :let={{_id, link}} label="Date">{Date.to_iso8601(link.updated_at)}</:col>
         <:col :let={{_id, link}} label="Votes">{link.points}</:col>
@@ -108,9 +110,12 @@ defmodule RedditWeb.RedditLive.Index do
 
     flash =
       if link do
-        Reddit.Links.vote_link_up(socket.assigns.current_scope, link)
+        case Reddit.Links.vote_link_up(socket.assigns.current_scope, link) do
+          :voted_up -> "Link voted up"
+          :already_voted_up -> "Link already vote up"
+        end
       else
-        :unknown_link
+        "Unknown link"
       end
 
     Process.send_after(self(), :clear_flash, 2500)
@@ -126,9 +131,12 @@ defmodule RedditWeb.RedditLive.Index do
 
     flash =
       if link do
-        Reddit.Links.vote_link_down(socket.assigns.current_scope, link)
+        case Reddit.Links.vote_link_down(socket.assigns.current_scope, link) do
+          :voted_down -> "Link voted down"
+          :already_voted_down -> "Link already voted down"
+        end
       else
-        :unknown_link
+        "Unknown link"
       end
 
     Process.send_after(self(), :clear_flash, 2500)

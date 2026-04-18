@@ -22,7 +22,7 @@ defmodule Reddit.Utils do
             |> then(&{:ok, &1})
 
           _ ->
-            {:error, "failed to resolve url and find html title"}
+            {:error, "Failed to resolve url and find html title"}
         end
 
       {:error, msg} ->
@@ -36,11 +36,11 @@ defmodule Reddit.Utils do
         if uri.scheme in ~w(http https) && uri.host != "" do
           {:ok, uri}
         else
-          {:error, "malformed/unsupported url"}
+          {:error, "Malformed or unsupported url"}
         end
 
       {:error, _error} ->
-        {:error, "malformed url"}
+        {:error, "Malformed url"}
     end
   end
 

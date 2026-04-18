@@ -150,7 +150,7 @@ defmodule RedditWeb.RedditLive.Form do
         |> assign(link_valid: true)
         |> assign(link_extracted_title: title)
         |> assign(link_validation_error: nil)
-        |> put_flash(:info, ":link_valid")
+        |> put_flash(:info, "Link validated successfully")
 
       {:error, message} ->
         socket
