@@ -357,5 +357,4 @@ defmodule Reddit.Links do
 
   # links = urls |> Enum.map(fn url -> Reddit.Repo.get_by(Reddit.Links.Link, url: url) end)
   # links |> Enum.map(fn link -> "INSERT INTO links (url, title, points, user_id, inserted_at, updated_at) VALUES ('#{link.url}', '#{link.title}', #{link.points}, #{link.user_id}, '#{to_string(link.inserted_at)}', '#{to_string(link.updated_at)}');" end) |> Enum.join("\n") |> IO.puts
-
 end

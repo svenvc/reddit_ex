@@ -50,7 +50,39 @@
           <.link href={~p"/users/log-in"}>Log in</.link>
         </li>
       <% end %>
+      <li>
+        <.link onclick="about_modal.showModal()">About</.link>
+      </li>
     </ul>
+    <dialog id="about_modal" class="modal">
+      <div class="modal-box w-8/12 max-w-2xl">
+        <h1 class="border-b-4 border-vlario-blue mb-6 text-2xl font-bold">About Reddit_ex</h1>
+        <div class="space-y-4">
+          <p>
+            Minimal Reddit clone written using Elixir and the Phoenix framework.
+          </p>
+          <p>
+            The goal of this project is to demonstrate how to deploy a non-trivial web app.
+            This application has a public, before login side as well an a private, after login side.
+            The standard authentication layer is used with email based registration or one time login links.
+            Mails are sent using Gmail.
+            Persistence of users, links and votes in handled via PostgreSQL.
+            This is an open source application.
+          </p>
+          <div class="divider mt-8 mb-8" />
+          <p>
+            Application version {Application.spec(:reddit_ex, :vsn)}
+          </p>
+          <p>
+            For more information, see the project website
+            <a href="https://github.com/svenvc/reddit_ex" class="underline">reddit_ex</a>
+          </p>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
     {@inner_content}
   </body>
 </html>
