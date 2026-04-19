@@ -11,6 +11,13 @@ Mails are sent using Gmail.
 Persistence of users, links and votes in handled via PostgreSQL.
 This is an open source application.
 
+## screenshots
+
+![Reddit_ex public view](screenshots/reddit_ex_public.png)
+
+![Reddit_ex user view](screenshots/reddit_ex_user.png)
+
+![Reddit_ex new link dialog](screenshots/reddit_ex_new.png)
 
 ## dev
 
