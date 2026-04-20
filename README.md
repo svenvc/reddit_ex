@@ -52,3 +52,7 @@ The following environment variables should be set:
 - GOOGLE_REFRESH_TOKEN=
 
 The port exposed should then be reverse-proxied to the outside world as https.
+
+Access the IEx REPL with `podman exec -it reddit /app/bin/reddit_ex remote`.
+Execute initial database setup migration with `podman exec -it reddit /app/bin/migrate`.
+Open psql with `podman exec -it psql-reddit psql postgresql://reddit:$POSTGRES_PASSWORD@localhost/reddit`.
