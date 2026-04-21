@@ -10,6 +10,8 @@ services:
     image: localhost/reddit_ex
     container_name: reddit
     restart: always
+    networks:
+      - reddit-network
     environment:
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
       PHX_HOST: ${PHX_HOST}
@@ -18,19 +20,24 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       GOOGLE_REFRESH_TOKEN: ${GOOGLE_REFRESH_TOKEN}
     ports:
-      - "6001:4000"
+      - "${HOST_PORT}:4000"
     depends_on:
       - psql-reddit
   psql-reddit:
     image: docker.io/library/postgres
     container_name: psql-reddit
     restart: always
+    networks:
+      - reddit-network
     volumes:
       - psql-data-reddit:/var/lib/postgresql
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+networks:
+  reddit-network:
+    name: reddit-network
 volumes:
   psql-data-reddit:
     name: psql-data-reddit
