@@ -1,0 +1,17 @@
+[Unit]
+Description=Reddit Podman Container
+After=psql-reddit.container
+Requires=psql-reddit.container
+
+[Container]
+Image=localhost/reddit_ex
+ContainerName=reddit
+PublishPort=6000:4000
+EnvironmentFile=/home/sven/src/reddit_ex/.compose.env
+Network=reddit-network.network
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

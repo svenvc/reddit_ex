@@ -1,0 +1,6 @@
+[Unit]
+Description=Reddit network Podman Container
+
+[Network]
+Driver=bridge
+NetworkName=reddit-network

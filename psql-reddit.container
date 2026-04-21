@@ -1,0 +1,15 @@
+[Unit]
+Description=Reddit PostgreSQL Podman Container
+
+[Container]
+ContainerName=psql-reddit
+Image=docker.io/library/postgres
+EnvironmentFile=/home/sven/src/reddit_ex/.compose.env
+Volume=psql-data-reddit:/var/lib/postgresql
+Network=reddit-network.network
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

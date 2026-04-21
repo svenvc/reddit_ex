@@ -1,0 +1,5 @@
+[Unit]
+Description=Reddit PostgreSQL data volume Podman Container
+
+[Volume]
+VolumeName=psql-data-reddit
