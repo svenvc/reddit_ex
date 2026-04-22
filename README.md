@@ -56,3 +56,17 @@ The port exposed should then be reverse-proxied to the outside world as https.
 Access the IEx REPL with `podman exec -it reddit /app/bin/reddit_ex remote`.
 Execute initial database setup migration with `podman exec -it reddit /app/bin/migrate`.
 Open psql with `podman exec -it psql-reddit psql postgresql://reddit:$POSTGRES_PASSWORD@localhost/reddit`.
+
+There are also definitions to run the elements of the compose file separately as Podman Quadlets:
+
+- (reddit.container)[reddit.container]
+- (psq-reddit.container)[psql-reddit.container]
+- (psql-data-reddit.volume)[psql-data-reddit.volume]
+- (reddit-network.network)[reddit-network.network]
+
+You copy or link these in `~/.config/containers/systemd/` and 
+execute `systemctl --user daemon-reload` and `systemctl --user start reddit`,
+which should bring up the whole stack.
+
+Double check the absolute file reference to the .env file!
+In this case, you need to write out the full DATABASE_URL explicitly.
